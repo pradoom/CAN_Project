@@ -11,14 +11,20 @@ void CAN_INIT(void)
 	C1MOD=0;//cancle reset mode
 }
 
-void CAN1_TX(CAN1 C1)
-{
-	C1TID1=C1.id;
-	C1TFI1=C1.dlc<<16;//rtr=0
-	if(C1.rtr==0)
-	{
-		C1TDA1=C1.byteA;
-		C1TDB1=C1.byteB;
-	}
-}
+#define RBS (C1GSR&1)
 
+void CAN_RX(CAN1 *C1ptr)
+{
+		while(RBS==0);
+		C1ptr->id=C1RID;
+		C1ptr->dlc=(C1RFS>>16)&0xF;
+		C1ptr->rtr=(C1RFS>>30)&1;
+		if(C1ptr->rtr==0)
+		{
+			C1ptr->byteA=C1RDA;
+			C1ptr->byteB=C1RDB;
+		}
+	
+		C1CMR=(1<<2);//relese reciver buffer
+	
+}
