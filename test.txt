@@ -1,2 +1,58 @@
-text file test
-jhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+# from git import *
+# import os
+
+# repo=Repo.clone_from('https://github.com/pradoom/CAN_Project.git',to_path='D:\masterEngine_V1\gitrepos')
+# remote_commit = repo.remote().fetch()[0].commit.hexsha
+# print(remote_commit)
+
+
+# from git import *
+# import os
+
+
+
+
+
+# repo = Repo.init('D:\masterEngine_V1\gitrepos')  # Create an in-memory bare repository
+# origin = repo.create_remote("origin",'https://github.com/pradoom/CAN_Project.git')
+# origin.fetch()  # Fetch updates from the remote
+# # Get the latest commit hash for the branch
+# remote_commit = repo.refs["origin/main"].commit.hexsha
+
+# print(remote_commit)
+
+
+import requests  # Import the requests library to make HTTP requests
+# Configuration: Replace these with your repository information
+GITHUB_API_URL = "https://api.github.com/repos/{owner}/{repo}/commits/{branch}"
+REPO_OWNER = "pradoom"  # Replace with the owner of the repository
+REPO_NAME = "CAN_Project"  # Replace with the repository name
+BRANCH_NAME = "main"  # Replace with the branch you want to check (e.g., "main", "master")
+
+def get_latest_commit_from_api(owner, repo, branch):
+    """Fetch the latest commit hash from the GitHub API."""
+    # Build the URL to the GitHub API endpoint for commits
+    url = GITHUB_API_URL.format(owner=owner, repo=repo, branch=branch)
+    
+    # Send a GET request to the GitHub API to fetch commit information
+    response = requests.get(url)
+    
+    # Check if the request was successful (HTTP status code 200)
+    if response.status_code == 200:
+        # Print the entire response to understand its structure
+        #print("API Response:", response.json())
+
+        # Check if the response contains commits
+        commits=response.json()
+        if len(response.json()) > 0:
+            # Extract the commit SHA (hash) from the first commit in the list
+            latest_commit_sha = commits["sha"]
+            print(f"Latest commit hash: {latest_commit_sha}")
+        else:
+            print("No commits found for this branch.")
+    else:
+        # If the request failed, print an error message
+        print(f"Failed to fetch commit data: {response.status_code} {response.text}")
+
+# Call the function to get and print the latest commit hash
+get_latest_commit_from_api(REPO_OWNER, REPO_NAME, BRANCH_NAME)
